@@ -1,0 +1,6 @@
+{
+  "name": "VOCATIO: El Camino del Médico",
+  "description": "Videojuego educativo RPG 2D pixel art sobre 'La persona en el ejercicio de la medicina', psicología médica, relación médico-paciente y vocación profesional.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
