@@ -62,6 +62,9 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
           <h2 className="text-xs sm:text-base font-retro text-cyan-200 font-medium tracking-wide mt-0.5">
             El Camino del Médico
           </h2>
+          <p className="text-[10px] sm:text-xs font-retro text-cyan-300/80 font-medium tracking-wider mt-1">
+            La Persona en el ejercicio de la medicina
+          </p>
         </div>
 
         <p className="text-xs sm:text-sm text-slate-300 font-ui max-w-lg mx-auto leading-relaxed hidden xs:block">
