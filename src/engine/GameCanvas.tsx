@@ -4,7 +4,7 @@ import { CharacterCustomization, MapLocation, MapObject, NPC } from '../types/ga
 import { MAPS_DATA } from '../data/mapsData';
 import { drawPixelCharacter, drawTile, drawObject, drawIndicator } from './spriteRenderer';
 import { soundEngine } from '../audio/soundEngine';
-import { Compass, MessageSquare, Hand, Sparkles } from 'lucide-react';
+import { Compass, MessageSquare, Hand, Sparkles, MapPin } from 'lucide-react';
 
 interface GameCanvasProps {
   currentMapId: string;
@@ -40,6 +40,12 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   const [nearbyObject, setNearbyObject] = useState<MapObject | null>(null);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
+  // Area entrance popup banner state
+  const [areaBanner, setAreaBanner] = useState<{ name: string; description: string } | null>(null);
+  const [showAreaBanner, setShowAreaBanner] = useState<boolean>(false);
+  const [bannerKey, setBannerKey] = useState<number>(0);
+
+
   const TILE_SIZE = 32;
 
   // Real-time movement state
@@ -71,7 +77,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   }, [currentMapId]); 
   // ONLY run on currentMapId change. Do NOT depend on playerX/Y to avoid stuttering!
 
-  // Ambient sound according to current room
+  // Ambient sound & Location banner popup according to current room
   useEffect(() => {
     const soundMap: Record<string, 'campus' | 'hospital' | 'library' | 'reflection' | 'tension'> = {
       campus_main: 'campus',
@@ -82,13 +88,22 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     };
     soundEngine.playMusic(soundMap[currentMapId] || 'campus');
 
-    // Stop the ambient loop when GameCanvas unmounts (e.g. returning to the
-    // title screen or resetting the game) so no orphaned setTimeout keeps
-    // scheduling notes in the background.
+    // Trigger Area Entrance Banner Notice
+    const map = MAPS_DATA[currentMapId] || MAPS_DATA.campus_main;
+    setAreaBanner({ name: map.name, description: map.description });
+    setShowAreaBanner(true);
+    setBannerKey(prev => prev + 1);
+
+    const bannerTimer = setTimeout(() => {
+      setShowAreaBanner(false);
+    }, 3600);
+
     return () => {
+      clearTimeout(bannerTimer);
       soundEngine.stopMusic();
     };
   }, [currentMapId]);
+
 
   // Check nearby interactables
   const checkProximity = useCallback((px: number, py: number, map: MapLocation) => {
@@ -382,6 +397,29 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         <div className="absolute inset-0 bg-slate-950 transition-opacity duration-200 pointer-events-none z-50" />
       )}
 
+      {/* Area Entrance Notification Banner Popup */}
+      {areaBanner && showAreaBanner && (
+        <div
+          key={`area-banner-${currentMapId}-${bannerKey}`}
+          className="absolute top-8 left-1/2 -translate-x-1/2 z-40 pointer-events-none animate-area-banner flex flex-col items-center"
+        >
+          <div className="bg-slate-950/95 border-2 border-cyan-400/90 shadow-[0_0_35px_rgba(6,182,212,0.4)] px-7 py-3 rounded-2xl flex flex-col items-center text-center backdrop-blur-md min-w-[280px] max-w-[90vw]">
+            <div className="flex items-center gap-1.5 mb-1">
+              <MapPin className="w-4 h-4 text-amber-400 animate-bounce" />
+              <span className="text-[10px] font-retro uppercase tracking-[0.25em] text-amber-400 font-bold">
+                Área Actual
+              </span>
+            </div>
+            <h2 className="text-base md:text-lg font-bold font-retro text-cyan-100 tracking-wide drop-shadow-md">
+              {areaBanner.name}
+            </h2>
+            <p className="text-[11px] md:text-xs text-slate-300 font-ui mt-0.5 max-w-sm line-clamp-2">
+              {areaBanner.description}
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="absolute top-4 left-4 z-20 pointer-events-none bg-slate-900/90 border border-slate-700/80 px-3.5 py-1.5 rounded-lg shadow-lg flex items-center gap-2 backdrop-blur-md">
         <Compass className="w-4 h-4 text-cyan-400 animate-spin-slow" />
         <div>
@@ -389,6 +427,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           <p className="text-[11px] text-slate-400 font-ui line-clamp-1">{mapData.description}</p>
         </div>
       </div>
+
 
       {(nearbyNPC || nearbyObject) && (
         <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-30 animate-bounce bg-cyan-950/95 border-2 border-cyan-400 text-cyan-100 px-5 py-2.5 rounded-xl shadow-2xl flex items-center gap-3 backdrop-blur-md">

@@ -94,3 +94,28 @@
   background-size: 100% 3px, 6px 100%;
   pointer-events: none;
 }
+
+/* Location / Area Banner Animations */
+@keyframes areaBannerEnter {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -20px) scale(0.95);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -15px) scale(0.98);
+  }
+}
+
+.animate-area-banner {
+  animation: areaBannerEnter 3.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
