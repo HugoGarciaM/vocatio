@@ -32,8 +32,10 @@ import { LevelUpModal } from './components/LevelUpModal';
 import { ChapterCompleteModal } from './components/ChapterCompleteModal';
 import { AchievementToast } from './components/AchievementToast';
 import { ObjectInspectorModal } from './components/ObjectInspectorModal';
+import { RotateDevicePromptModal } from './components/RotateDevicePromptModal';
 
 const SAVE_KEY = 'vocatio_rpg_save_v1';
+
 
 const NPC_DIALOGUE_ALIASES: Record<string, string> = {
   intro_prof_navarro: 'ch1_intro',
@@ -504,6 +506,9 @@ export default function App() {
 
   return (
     <div className="fixed inset-0 w-full h-full h-[100dvh] bg-slate-950 overflow-hidden font-ui select-none text-slate-100 touch-none">
+      {/* Device Rotation Overlay Prompt for Mobile/Tablet in Portrait */}
+      <RotateDevicePromptModal />
+
       {/* 1. TITLE SCREEN */}
       {screen === 'title' && (
         <TitleScreen

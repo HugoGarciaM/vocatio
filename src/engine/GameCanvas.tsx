@@ -486,10 +486,10 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
       {/* Universal Touch Controls Overlay (Android, Mobile, Tablet & Touchscreen Devices) */}
       {isTouchDevice && (
-        <div className="absolute inset-0 pointer-events-none z-30 flex justify-between items-end p-3 md:p-6 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <div className="absolute inset-0 pointer-events-none z-30 flex justify-between items-end p-2 sm:p-4 md:p-6 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           {/* Virtual 4-Way Directional D-Pad */}
           <div
-            className="pointer-events-auto relative w-40 h-40 md:w-44 md:h-44 bg-slate-950/85 border-2 border-cyan-500/60 rounded-full p-2 backdrop-blur-md shadow-2xl touch-none flex items-center justify-center select-none"
+            className="pointer-events-auto relative w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 bg-slate-950/85 border-2 border-cyan-500/60 rounded-full p-1.5 backdrop-blur-md shadow-2xl touch-none flex items-center justify-center select-none"
             onTouchMove={handleDPadTouchMove}
             onTouchEnd={() => { virtualDir.current = null; }}
           >
@@ -500,7 +500,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
               onTouchEnd={(e) => { e.preventDefault(); virtualDir.current = null; }}
               onMouseDown={() => { virtualDir.current = 'up'; }}
               onMouseUp={() => { virtualDir.current = null; }}
-              className="absolute top-1 left-1/2 -translate-x-1/2 w-12 h-13 bg-cyan-950/90 border border-cyan-400/70 rounded-t-2xl flex items-center justify-center text-cyan-300 active:bg-cyan-500 active:text-slate-950 font-bold text-lg select-none shadow-md"
+              className="absolute top-1 left-1/2 -translate-x-1/2 w-10 h-11 sm:w-12 sm:h-13 bg-cyan-950/90 border border-cyan-400/70 rounded-t-xl sm:rounded-t-2xl flex items-center justify-center text-cyan-300 active:bg-cyan-500 active:text-slate-950 font-bold text-base sm:text-lg select-none shadow-md"
             >
               ▲
             </button>
@@ -512,7 +512,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
               onTouchEnd={(e) => { e.preventDefault(); virtualDir.current = null; }}
               onMouseDown={() => { virtualDir.current = 'down'; }}
               onMouseUp={() => { virtualDir.current = null; }}
-              className="absolute bottom-1 left-1/2 -translate-x-1/2 w-12 h-13 bg-cyan-950/90 border border-cyan-400/70 rounded-b-2xl flex items-center justify-center text-cyan-300 active:bg-cyan-500 active:text-slate-950 font-bold text-lg select-none shadow-md"
+              className="absolute bottom-1 left-1/2 -translate-x-1/2 w-10 h-11 sm:w-12 sm:h-13 bg-cyan-950/90 border border-cyan-400/70 rounded-b-xl sm:rounded-b-2xl flex items-center justify-center text-cyan-300 active:bg-cyan-500 active:text-slate-950 font-bold text-base sm:text-lg select-none shadow-md"
             >
               ▼
             </button>
@@ -524,7 +524,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
               onTouchEnd={(e) => { e.preventDefault(); virtualDir.current = null; }}
               onMouseDown={() => { virtualDir.current = 'left'; }}
               onMouseUp={() => { virtualDir.current = null; }}
-              className="absolute left-1 top-1/2 -translate-y-1/2 w-13 h-12 bg-cyan-950/90 border border-cyan-400/70 rounded-l-2xl flex items-center justify-center text-cyan-300 active:bg-cyan-500 active:text-slate-950 font-bold text-lg select-none shadow-md"
+              className="absolute left-1 top-1/2 -translate-y-1/2 w-11 h-10 sm:w-13 sm:h-12 bg-cyan-950/90 border border-cyan-400/70 rounded-l-xl sm:rounded-l-2xl flex items-center justify-center text-cyan-300 active:bg-cyan-500 active:text-slate-950 font-bold text-base sm:text-lg select-none shadow-md"
             >
               ◀
             </button>
@@ -536,23 +536,23 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
               onTouchEnd={(e) => { e.preventDefault(); virtualDir.current = null; }}
               onMouseDown={() => { virtualDir.current = 'right'; }}
               onMouseUp={() => { virtualDir.current = null; }}
-              className="absolute right-1 top-1/2 -translate-y-1/2 w-13 h-12 bg-cyan-950/90 border border-cyan-400/70 rounded-r-2xl flex items-center justify-center text-cyan-300 active:bg-cyan-500 active:text-slate-950 font-bold text-lg select-none shadow-md"
+              className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-10 sm:w-13 sm:h-12 bg-cyan-950/90 border border-cyan-400/70 rounded-r-xl sm:rounded-r-2xl flex items-center justify-center text-cyan-300 active:bg-cyan-500 active:text-slate-950 font-bold text-base sm:text-lg select-none shadow-md"
             >
               ▶
             </button>
 
             {/* D-Pad Center Indicator */}
-            <div className="w-9 h-9 rounded-full bg-cyan-950 border border-cyan-400/50 flex items-center justify-center text-[9px] font-retro text-cyan-400 font-bold pointer-events-none">
-              D-PAD
+            <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-cyan-950 border border-cyan-400/50 flex items-center justify-center text-[8px] sm:text-[9px] font-retro text-cyan-400 font-bold pointer-events-none">
+              PAD
             </div>
           </div>
 
           {/* Action / Interaction Touch Button */}
-          <div className="pointer-events-auto flex flex-col items-end gap-2 mb-1">
+          <div className="pointer-events-auto flex flex-col items-end gap-2 mb-0.5">
             <button
               onClick={handlePrimaryInteract}
               onTouchStart={(e) => { e.preventDefault(); handlePrimaryInteract(); }}
-              className={`w-20 h-20 md:w-24 md:h-24 rounded-full flex flex-col items-center justify-center border-4 shadow-2xl transition-all cursor-pointer select-none active:scale-95 ${
+              className={`w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full flex flex-col items-center justify-center border-2 sm:border-4 shadow-2xl transition-all cursor-pointer select-none active:scale-95 ${
                 nearbyNPC || nearbyObject
                   ? 'bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 border-white text-slate-950 animate-pulse'
                   : 'bg-gradient-to-tr from-cyan-600 to-blue-600 border-cyan-300 text-slate-950'
@@ -560,24 +560,25 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
             >
               {nearbyNPC ? (
                 <>
-                  <MessageSquare className="w-7 h-7 mb-0.5 fill-current" />
-                  <span className="text-[10px] font-bold font-retro uppercase tracking-tighter">Hablar</span>
+                  <MessageSquare className="w-5 h-5 sm:w-7 sm:h-7 mb-0.5 fill-current" />
+                  <span className="text-[9px] sm:text-[10px] font-bold font-retro uppercase tracking-tighter">Hablar</span>
                 </>
               ) : nearbyObject ? (
                 <>
-                  <Sparkles className="w-7 h-7 mb-0.5 fill-current" />
-                  <span className="text-[10px] font-bold font-retro uppercase tracking-tighter">Examinar</span>
+                  <Sparkles className="w-5 h-5 sm:w-7 sm:h-7 mb-0.5 fill-current" />
+                  <span className="text-[9px] sm:text-[10px] font-bold font-retro uppercase tracking-tighter">Examinar</span>
                 </>
               ) : (
                 <>
-                  <Hand className="w-7 h-7 mb-0.5" />
-                  <span className="text-[10px] font-bold font-retro uppercase tracking-tighter">Acción [E]</span>
+                  <Hand className="w-5 h-5 sm:w-7 sm:h-7 mb-0.5" />
+                  <span className="text-[9px] sm:text-[10px] font-bold font-retro uppercase tracking-tighter">Acción [E]</span>
                 </>
               )}
             </button>
           </div>
         </div>
       )}
+
 
       {/* Manual Touch Control Toggle (Fallback for Touchscreen Laptops or Manual Enable) */}
       <button
