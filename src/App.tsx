@@ -503,7 +503,7 @@ export default function App() {
   const xpToNextLevel = gameState.level * 100;
 
   return (
-    <div className="relative w-screen h-screen bg-slate-950 overflow-hidden font-ui select-none text-slate-100">
+    <div className="fixed inset-0 w-full h-full h-[100dvh] bg-slate-950 overflow-hidden font-ui select-none text-slate-100 touch-none">
       {/* 1. TITLE SCREEN */}
       {screen === 'title' && (
         <TitleScreen

@@ -45,6 +45,39 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   const [showAreaBanner, setShowAreaBanner] = useState<boolean>(false);
   const [bannerKey, setBannerKey] = useState<number>(0);
 
+  // Android & Mobile Touch Device Detection
+  const [isTouchDevice, setIsTouchDevice] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    const ua = navigator.userAgent || '';
+    const isAndroid = /Android/i.test(ua);
+    const isMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    const hasTouch = 'ontouchstart' in window || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
+    return isAndroid || isMobileOrTablet || hasTouch;
+  });
+
+  useEffect(() => {
+    const enableTouch = () => setIsTouchDevice(true);
+    window.addEventListener('touchstart', enableTouch, { once: true });
+    return () => window.removeEventListener('touchstart', enableTouch);
+  }, []);
+
+  const handleDPadTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault();
+    if (e.touches.length > 0) {
+      const touch = e.touches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (target) {
+        const dir = target.getAttribute('data-dir');
+        if (dir) {
+          virtualDir.current = dir;
+          return;
+        }
+      }
+    }
+    virtualDir.current = null;
+  };
+
+
 
   const TILE_SIZE = 32;
 
@@ -401,26 +434,27 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       {areaBanner && showAreaBanner && (
         <div
           key={`area-banner-${currentMapId}-${bannerKey}`}
-          className="absolute top-8 left-1/2 -translate-x-1/2 z-40 pointer-events-none animate-area-banner flex flex-col items-center"
+          className="absolute top-16 md:top-12 left-1/2 -translate-x-1/2 z-40 pointer-events-none animate-area-banner flex flex-col items-center"
         >
-          <div className="bg-slate-950/95 border-2 border-cyan-400/90 shadow-[0_0_35px_rgba(6,182,212,0.4)] px-7 py-3 rounded-2xl flex flex-col items-center text-center backdrop-blur-md min-w-[280px] max-w-[90vw]">
+          <div className="bg-slate-950/95 border-2 border-cyan-400/90 shadow-[0_0_35px_rgba(6,182,212,0.4)] px-6 py-2.5 md:px-7 md:py-3 rounded-2xl flex flex-col items-center text-center backdrop-blur-md min-w-[260px] max-w-[90vw]">
             <div className="flex items-center gap-1.5 mb-1">
               <MapPin className="w-4 h-4 text-amber-400 animate-bounce" />
-              <span className="text-[10px] font-retro uppercase tracking-[0.25em] text-amber-400 font-bold">
+              <span className="text-[9px] md:text-[10px] font-retro uppercase tracking-[0.25em] text-amber-400 font-bold">
                 Área Actual
               </span>
             </div>
-            <h2 className="text-base md:text-lg font-bold font-retro text-cyan-100 tracking-wide drop-shadow-md">
+            <h2 className="text-sm md:text-lg font-bold font-retro text-cyan-100 tracking-wide drop-shadow-md">
               {areaBanner.name}
             </h2>
-            <p className="text-[11px] md:text-xs text-slate-300 font-ui mt-0.5 max-w-sm line-clamp-2">
+            <p className="text-[10px] md:text-xs text-slate-300 font-ui mt-0.5 max-w-sm line-clamp-2">
               {areaBanner.description}
             </p>
           </div>
         </div>
       )}
 
-      <div className="absolute top-4 left-4 z-20 pointer-events-none bg-slate-900/90 border border-slate-700/80 px-3.5 py-1.5 rounded-lg shadow-lg flex items-center gap-2 backdrop-blur-md">
+      {/* Static location badge */}
+      <div className="hidden sm:flex absolute top-16 left-4 z-20 pointer-events-none bg-slate-900/90 border border-slate-700/80 px-3.5 py-1.5 rounded-lg shadow-lg items-center gap-2 backdrop-blur-md">
         <Compass className="w-4 h-4 text-cyan-400 animate-spin-slow" />
         <div>
           <h3 className="font-retro text-sm text-cyan-200 tracking-wide font-bold">{mapData.name}</h3>
@@ -428,21 +462,21 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         </div>
       </div>
 
-
+      {/* Nearby Proximity Prompt (Desktop / Touch) */}
       {(nearbyNPC || nearbyObject) && (
-        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-30 animate-bounce bg-cyan-950/95 border-2 border-cyan-400 text-cyan-100 px-5 py-2.5 rounded-xl shadow-2xl flex items-center gap-3 backdrop-blur-md">
-          <Sparkles className="w-5 h-5 text-amber-400" />
+        <div className="absolute bottom-28 sm:bottom-24 left-1/2 -translate-x-1/2 z-30 animate-bounce bg-cyan-950/95 border-2 border-cyan-400 text-cyan-100 px-4 py-2 md:px-5 md:py-2.5 rounded-xl shadow-2xl flex items-center gap-3 backdrop-blur-md max-w-[92vw]">
+          <Sparkles className="w-5 h-5 text-amber-400 shrink-0" />
           <div className="text-left">
-            <div className="text-xs font-bold font-retro text-cyan-200 uppercase tracking-wider">
-              {nearbyNPC ? `Hablar con ${nearbyNPC.fullName || nearbyNPC.name} ${nearbyNPC.isPatient ? `(Paciente - ${nearbyNPC.age} años)` : ''}` : `Examinar ${nearbyObject?.name}`}
+            <div className="text-xs font-bold font-retro text-cyan-200 uppercase tracking-wider line-clamp-1">
+              {nearbyNPC ? `Hablar con ${nearbyNPC.fullName || nearbyNPC.name}` : `Examinar ${nearbyObject?.name}`}
             </div>
-            <div className="text-[11px] text-slate-300 font-ui">
-              Presiona <kbd className="px-1.5 py-0.5 bg-cyan-800 text-white rounded font-mono text-[10px]">E</kbd> o toca el botón de interacción
+            <div className="text-[10px] md:text-[11px] text-slate-300 font-ui">
+              Presiona <kbd className="px-1 bg-cyan-800 text-white rounded font-mono text-[9px]">E</kbd> o toca Acción
             </div>
           </div>
           <button
             onClick={handlePrimaryInteract}
-            className="ml-2 px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-xs font-retro pixel-button flex items-center gap-1 cursor-pointer"
+            className="ml-1 px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-xs font-retro pixel-button flex items-center gap-1 cursor-pointer shrink-0"
           >
             <Hand className="w-3.5 h-3.5" />
             Interactuar
@@ -450,52 +484,112 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         </div>
       )}
 
-      {/* Mobile Touch On-Screen Virtual Controls (Hold to move) */}
-      <div className="md:hidden absolute bottom-4 left-4 z-30 flex flex-col items-center gap-1 opacity-90 touch-none">
-        <button
-          onTouchStart={(e) => { e.preventDefault(); startTouchMove('up'); }}
-          onTouchEnd={(e) => { e.preventDefault(); stopTouchMove(); }}
-          className="w-16 h-16 bg-slate-900/80 border-2 border-cyan-500/60 rounded-xl flex items-center justify-center text-cyan-300 active:bg-cyan-600 active:text-white font-bold text-2xl select-none"
-        >
-          ▲
-        </button>
-        <div className="flex gap-16">
-          <button
-            onTouchStart={(e) => { e.preventDefault(); startTouchMove('left'); }}
-            onTouchEnd={(e) => { e.preventDefault(); stopTouchMove(); }}
-            className="w-16 h-16 bg-slate-900/80 border-2 border-cyan-500/60 rounded-xl flex items-center justify-center text-cyan-300 active:bg-cyan-600 active:text-white font-bold text-2xl select-none"
+      {/* Universal Touch Controls Overlay (Android, Mobile, Tablet & Touchscreen Devices) */}
+      {isTouchDevice && (
+        <div className="absolute inset-0 pointer-events-none z-30 flex justify-between items-end p-3 md:p-6 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          {/* Virtual 4-Way Directional D-Pad */}
+          <div
+            className="pointer-events-auto relative w-40 h-40 md:w-44 md:h-44 bg-slate-950/85 border-2 border-cyan-500/60 rounded-full p-2 backdrop-blur-md shadow-2xl touch-none flex items-center justify-center select-none"
+            onTouchMove={handleDPadTouchMove}
+            onTouchEnd={() => { virtualDir.current = null; }}
           >
-            ◀
-          </button>
-          <button
-            onTouchStart={(e) => { e.preventDefault(); startTouchMove('right'); }}
-            onTouchEnd={(e) => { e.preventDefault(); stopTouchMove(); }}
-            className="w-16 h-16 bg-slate-900/80 border-2 border-cyan-500/60 rounded-xl flex items-center justify-center text-cyan-300 active:bg-cyan-600 active:text-white font-bold text-2xl select-none"
-          >
-            ▶
-          </button>
-        </div>
-        <button
-          onTouchStart={(e) => { e.preventDefault(); startTouchMove('down'); }}
-          onTouchEnd={(e) => { e.preventDefault(); stopTouchMove(); }}
-          className="w-16 h-16 bg-slate-900/80 border-2 border-cyan-500/60 rounded-xl flex items-center justify-center text-cyan-300 active:bg-cyan-600 active:text-white font-bold text-2xl -mt-16 select-none"
-          style={{ transform: 'translateY(68px)' }}
-        >
-          ▼
-        </button>
-      </div>
+            {/* Up Button */}
+            <button
+              data-dir="up"
+              onTouchStart={(e) => { e.preventDefault(); virtualDir.current = 'up'; }}
+              onTouchEnd={(e) => { e.preventDefault(); virtualDir.current = null; }}
+              onMouseDown={() => { virtualDir.current = 'up'; }}
+              onMouseUp={() => { virtualDir.current = null; }}
+              className="absolute top-1 left-1/2 -translate-x-1/2 w-12 h-13 bg-cyan-950/90 border border-cyan-400/70 rounded-t-2xl flex items-center justify-center text-cyan-300 active:bg-cyan-500 active:text-slate-950 font-bold text-lg select-none shadow-md"
+            >
+              ▲
+            </button>
 
-      <div className="md:hidden absolute bottom-6 right-4 z-30 flex flex-col gap-2 touch-none">
-        <button
-          onClick={handlePrimaryInteract}
-          className="w-20 h-20 bg-cyan-500 text-slate-950 border-2 border-white rounded-full flex flex-col items-center justify-center shadow-2xl active:scale-95 font-bold font-retro text-sm select-none"
-        >
-          <MessageSquare className="w-6 h-6 mb-1" />
-          <span>Acción</span>
-        </button>
-      </div>
+            {/* Down Button */}
+            <button
+              data-dir="down"
+              onTouchStart={(e) => { e.preventDefault(); virtualDir.current = 'down'; }}
+              onTouchEnd={(e) => { e.preventDefault(); virtualDir.current = null; }}
+              onMouseDown={() => { virtualDir.current = 'down'; }}
+              onMouseUp={() => { virtualDir.current = null; }}
+              className="absolute bottom-1 left-1/2 -translate-x-1/2 w-12 h-13 bg-cyan-950/90 border border-cyan-400/70 rounded-b-2xl flex items-center justify-center text-cyan-300 active:bg-cyan-500 active:text-slate-950 font-bold text-lg select-none shadow-md"
+            >
+              ▼
+            </button>
+
+            {/* Left Button */}
+            <button
+              data-dir="left"
+              onTouchStart={(e) => { e.preventDefault(); virtualDir.current = 'left'; }}
+              onTouchEnd={(e) => { e.preventDefault(); virtualDir.current = null; }}
+              onMouseDown={() => { virtualDir.current = 'left'; }}
+              onMouseUp={() => { virtualDir.current = null; }}
+              className="absolute left-1 top-1/2 -translate-y-1/2 w-13 h-12 bg-cyan-950/90 border border-cyan-400/70 rounded-l-2xl flex items-center justify-center text-cyan-300 active:bg-cyan-500 active:text-slate-950 font-bold text-lg select-none shadow-md"
+            >
+              ◀
+            </button>
+
+            {/* Right Button */}
+            <button
+              data-dir="right"
+              onTouchStart={(e) => { e.preventDefault(); virtualDir.current = 'right'; }}
+              onTouchEnd={(e) => { e.preventDefault(); virtualDir.current = null; }}
+              onMouseDown={() => { virtualDir.current = 'right'; }}
+              onMouseUp={() => { virtualDir.current = null; }}
+              className="absolute right-1 top-1/2 -translate-y-1/2 w-13 h-12 bg-cyan-950/90 border border-cyan-400/70 rounded-r-2xl flex items-center justify-center text-cyan-300 active:bg-cyan-500 active:text-slate-950 font-bold text-lg select-none shadow-md"
+            >
+              ▶
+            </button>
+
+            {/* D-Pad Center Indicator */}
+            <div className="w-9 h-9 rounded-full bg-cyan-950 border border-cyan-400/50 flex items-center justify-center text-[9px] font-retro text-cyan-400 font-bold pointer-events-none">
+              D-PAD
+            </div>
+          </div>
+
+          {/* Action / Interaction Touch Button */}
+          <div className="pointer-events-auto flex flex-col items-end gap-2 mb-1">
+            <button
+              onClick={handlePrimaryInteract}
+              onTouchStart={(e) => { e.preventDefault(); handlePrimaryInteract(); }}
+              className={`w-20 h-20 md:w-24 md:h-24 rounded-full flex flex-col items-center justify-center border-4 shadow-2xl transition-all cursor-pointer select-none active:scale-95 ${
+                nearbyNPC || nearbyObject
+                  ? 'bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 border-white text-slate-950 animate-pulse'
+                  : 'bg-gradient-to-tr from-cyan-600 to-blue-600 border-cyan-300 text-slate-950'
+              }`}
+            >
+              {nearbyNPC ? (
+                <>
+                  <MessageSquare className="w-7 h-7 mb-0.5 fill-current" />
+                  <span className="text-[10px] font-bold font-retro uppercase tracking-tighter">Hablar</span>
+                </>
+              ) : nearbyObject ? (
+                <>
+                  <Sparkles className="w-7 h-7 mb-0.5 fill-current" />
+                  <span className="text-[10px] font-bold font-retro uppercase tracking-tighter">Examinar</span>
+                </>
+              ) : (
+                <>
+                  <Hand className="w-7 h-7 mb-0.5" />
+                  <span className="text-[10px] font-bold font-retro uppercase tracking-tighter">Acción [E]</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Manual Touch Control Toggle (Fallback for Touchscreen Laptops or Manual Enable) */}
+      <button
+        onClick={() => setIsTouchDevice(!isTouchDevice)}
+        className="absolute bottom-2 left-1/2 -translate-x-1/2 z-40 text-[9px] font-retro text-slate-400 hover:text-cyan-300 bg-slate-950/80 px-2 py-0.5 rounded border border-slate-800 cursor-pointer pointer-events-auto"
+        title="Alternar controles táctiles en pantalla"
+      >
+        {isTouchDevice ? 'Ocultar Controles Táctiles' : 'Activar Controles Táctiles'}
+      </button>
 
       <div className="absolute inset-0 scanlines pointer-events-none opacity-40" />
     </div>
   );
 };
+

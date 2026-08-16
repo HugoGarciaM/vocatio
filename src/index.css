@@ -6,6 +6,31 @@
     --font-retro: 'Pixelify Sans', sans-serif;
     --font-ui: 'Plus Jakarta Sans', sans-serif;
   }
+
+  html, body, #root {
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Safe area padding for mobile notches and status bars */
+.safe-pt {
+  padding-top: max(0.5rem, env(safe-area-inset-top));
+}
+.safe-pb {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
+.safe-pl {
+  padding-left: max(0.5rem, env(safe-area-inset-left));
+}
+.safe-pr {
+  padding-right: max(0.5rem, env(safe-area-inset-right));
 }
 
 .font-pixel {
@@ -28,9 +53,10 @@
   image-rendering: crisp-edges;
 }
 
+
 /* Retro UI Borders & Boxes */
 .pixel-box {
-  box-shadow: 
+  box-shadow:
     inset -4px -4px 0px 0px rgba(0, 0, 0, 0.4),
     inset 4px 4px 0px 0px rgba(255, 255, 255, 0.15),
     0 0 0 2px #0f172a,
@@ -38,7 +64,7 @@
 }
 
 .pixel-box-cyan {
-  box-shadow: 
+  box-shadow:
     inset -3px -3px 0px 0px #0e7490,
     inset 3px 3px 0px 0px #67e8f9,
     0 0 0 2px #083344;
@@ -46,7 +72,7 @@
 
 .pixel-button {
   transition: transform 0.05s ease, filter 0.1s ease;
-  box-shadow: 
+  box-shadow:
     inset -3px -3px 0px 0px rgba(0, 0, 0, 0.4),
     inset 3px 3px 0px 0px rgba(255, 255, 255, 0.25),
     0 2px 0px 1px rgba(0, 0, 0, 0.6);
@@ -54,7 +80,7 @@
 
 .pixel-button:active {
   transform: translateY(2px);
-  box-shadow: 
+  box-shadow:
     inset 2px 2px 0px 0px rgba(0, 0, 0, 0.5),
     0 0px 0px 0px rgba(0, 0, 0, 0.6);
 }
@@ -82,15 +108,11 @@
 
 /* CRT / Scanline subtle overlay */
 .scanlines {
-  background: linear-gradient(
-    rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.25) 50%
-  ), linear-gradient(
-    90deg,
-    rgba(255, 0, 0, 0.03),
-    rgba(0, 255, 0, 0.01),
-    rgba(0, 0, 255, 0.03)
-  );
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%,
+      rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg,
+      rgba(255, 0, 0, 0.03),
+      rgba(0, 255, 0, 0.01),
+      rgba(0, 0, 255, 0.03));
   background-size: 100% 3px, 6px 100%;
   pointer-events: none;
 }
@@ -101,14 +123,17 @@
     opacity: 0;
     transform: translate(-50%, -20px) scale(0.95);
   }
+
   15% {
     opacity: 1;
     transform: translate(-50%, 0) scale(1);
   }
+
   80% {
     opacity: 1;
     transform: translate(-50%, 0) scale(1);
   }
+
   100% {
     opacity: 0;
     transform: translate(-50%, -15px) scale(0.98);
@@ -118,4 +143,3 @@
 .animate-area-banner {
   animation: areaBannerEnter 3.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-
